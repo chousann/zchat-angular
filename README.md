@@ -84,6 +84,9 @@ ng add @angular/material
 6:添加pwa支持
 ng add @angular/pwa
 
+7：build lib依赖
+ng build websocketlib
+
 7：在本地运行新项目
 cd zblog-angular
 npm start
