@@ -1,0 +1,25 @@
+<p>
+  <mat-toolbar color="primary" (click)="back()">
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>退出</span>
+    <span class="example-spacer"></span>
+  </mat-toolbar>
+</p>
+<input id="videoCallButton" type="button" disabled value="Video Call"/>
+<input id="endCallButton" type="button" disabled value="End Call"/>
+<div class="example-boundary">
+  <div class="example-box" cdkDragBoundary=".example-boundary" cdkDrag>
+    <p>remote</p>
+    <video id="remote" autoplay></video>
+  </div>
+  <div class="example-box" cdkDragBoundary=".example-boundary" cdkDrag>
+    <p>local</p>
+    <video id="local" autoplay muted></video>
+  </div>
+</div>
+
+<div id="webrtc">
+
+</div>
