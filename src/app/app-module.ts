@@ -41,6 +41,8 @@ import { LocalstorageService } from './service/localstorage.service';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { WebsocketchatService, WebsocketlibModule } from 'websocketlib';
 import { ServiceWorkerModule, SwRegistrationOptions } from '@angular/service-worker';
+import { Chat } from './chat/chat';
+import { Chatview } from './chatview/chatview';
 
 @NgModule({
   declarations: [
@@ -58,7 +60,9 @@ import { ServiceWorkerModule, SwRegistrationOptions } from '@angular/service-wor
     WebrtcComponent,
     OAuthComponent,
     DataComponent,
-    CallsComponent
+    CallsComponent,
+    Chat,
+    Chatview
   ],
   imports: [
     BrowserModule,

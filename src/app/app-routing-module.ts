@@ -9,6 +9,8 @@ import { LoginComponent } from './login/login.component';
 import { OAuthComponent } from './oauth/oauth.component';
 import { SelectuserComponent } from './selectuser/selectuser.component';
 import { WebrtcComponent } from './webrtc/webrtc.component';
+import { Chat } from './chat/chat';
+import { Chatview } from './chatview/chatview';
 
 const routes: Routes = [
   {
@@ -29,6 +31,10 @@ const routes: Routes = [
     path: 'datachannel', component: DataComponent
   },{
     path: 'rtcdatachannel', component: CallsComponent
+  },{
+    path: 'chatbox', component: Chat
+  },{
+    path: 'chatview', component: Chatview
   }
 ];
 
