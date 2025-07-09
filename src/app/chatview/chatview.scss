@@ -638,3 +638,54 @@ span.friends {
 }
 
 /*--- //Responsive-Code ---*/
+
+// 消息动画效果
+.message {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 发送按钮样式
+#send {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+    background-color: #007bff;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// 输入框样式
+#sendmessage input {
+  transition: all 0.3s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  }
+}
+
+// 消息气泡样式
+.bubble {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+}

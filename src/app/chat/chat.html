@@ -1,64 +1,32 @@
-	<div class="container w3layouts agileits">
+<div class="container w3layouts agileits">
 
-		<div id="chatbox">
+	<div id="chatbox">
 
-			<div id="friendslist">
+		<div id="friendslist">
 
-				<div id="topmenu">
-					<span class="friends">CONTACTS</span>
+			<div id="topmenu">
+				<span class="friends">CONTACTS</span>
+			</div>
+
+			<div id="friends">
+
+				<div class="friend" *ngFor="let user of filteredUsers" 
+					 (click)="openChatView(user)"
+					 [ngClass]="{'w3layouts': user.id === 1, 'agileits': user.id === 5}">
+					<img [src]="user.avatar">
+					<p>
+						<strong>{{user.name}}</strong>
+						<span>{{user.email}}</span>
+					</p>
+					<div class="status" [ngClass]="getStatusClass(user.status)"></div>
 				</div>
 
-				<div id="friends">
-
-					<div class="friend w3layouts" [routerLink]="['/chatview']">
-						<img src="assets/images/winter-soldier.jpg">
-						<p>
-							<strong>Bucky Barnes</strong>
-							<span>wintersoldiergmail.com</span>
-						</p>
-						<div class="status available"></div>
-					</div>
-
-					<div class="friend">
-						<img src="assets/images/captain-america.jpg">
-						<p>
-							<strong>Steve Rogers</strong>
-							<span>captainamericagmail.com</span>
-						</p>
-						<div class="status away"></div>
-					</div>
-
-					<div class="friend">
-						<img src="assets/images/flying-falcon.jpg">
-						<p>
-							<strong>Sam Wilson</strong>
-							<span>flyingfalcongmail.com</span>
-						</p>
-						<div class="status inactive"></div>
-					</div>
-
-					<div class="friend">
-						<img src="assets/images/black-widow.jpg">
-						<p>
-							<strong>Natasha Romanoff</strong>
-							<span>blackwidowgmail.com</span>
-						</p>
-						<div class="status inactive"></div>
-					</div>
-
-					<div class="friend agileits">
-						<img src="assets/images/iron-man.jpg">
-						<p>
-							<strong>Tony Stark</strong>
-							<span>imironman4ugmail.com</span>
-						</p>
-						<div class="status inactive"></div>
-					</div>
-
-					<div id="search">
-						<input type="text" id="searchfield" placeholder="Search contacts...">
-					</div>
-
+				<div id="search">
+					<input type="text" 
+						   id="searchfield" 
+						   placeholder="Search contacts..." 
+						   [value]="searchTerm"
+						   (input)="searchUsers($event)">
 				</div>
 
 			</div>
@@ -66,3 +34,5 @@
 		</div>
 
 	</div>
+
+</div>

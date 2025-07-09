@@ -8,15 +8,16 @@
 						<div class="cy s1 s2 s3"></div>
 						<div class="cx s1 s2 s3"></div>
 					</div>
-                    <img src="assets/images/winter-soldier.jpg" class="floatingImg" style="top: 20px; width: 68px; left: 108px;">
-					<p class="animate"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">巴基·巴恩斯</font></font></p>
-					<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">wintersoldiergmail.com</font></font></span>
+                    <img [src]="userData.avatar || 'assets/images/winter-soldier.jpg'" class="floatingImg" style="top: 20px; width: 68px; left: 108px;">
+					<p class="animate"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{userData.name || '巴基·巴恩斯'}}</font></font></p>
+					<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{userData.email || 'wintersoldiergmail.com'}}</font></font></span>
 				</div>
 
 				<div id="chat-messages">
 
 					<label style="width: 100%;">Monday 01</label>
 
+					<!-- 静态示例消息 -->
 					<div class="message w3layouts">
 						<img src="assets/images/winter-soldier.jpg">
 						<div class="bubble">
@@ -25,92 +26,20 @@
 						</div>
 					</div>
 
-					<div class="message right agileits">
-						<img src="assets/images/captain-america.jpg">
+                    <!-- 动态消息 -->
+					<div class="message" *ngFor="let message of messages" [ngClass]="{'right': message.isOwn}">
+						<img [src]="message.avatar">
 						<div class="bubble">
-							Coz you're my best friend
-							<span>3 min</span>
-						</div>
-					</div>
-
-					<div class="message">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							I don't remember you
-							<span>2 Min</span>
-						</div>
-					</div>
-
-					<div class="message right w3layouts">
-						<img src="assets/images/captain-america.jpg">
-						<div class="bubble">
-							But I remember you
-							<span>1 Min</span>
-						</div>
-					</div>
-
-					<div class="message">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							Well, okay!
-							<span>Now</span>
-						</div>
-					</div>
-                    					<div class="message">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							Well, okay!
-							<span>Now</span>
-						</div>
-					</div>
-                    					<div class="message">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							Well, okay!
-							<span>Now</span>
-						</div>
-					</div>
-                    					<div class="message">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							Well, okay!
-							<span>Now</span>
-						</div>
-					</div>
-                    					<div class="message">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							Well, okay!
-							<span>Now</span>
-						</div>
-					</div>
-                    					<div class="message">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							Well, okay!
-							<span>Now</span>
-						</div>
-					</div>
-                    					<div class="message">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							Well, okay!
-							<span>Now</span>
-						</div>
-					</div>
-                    					<div class="message">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							Well, okay!
-							<span>Now</span>
+							{{message.text}}
+							<span>{{message.time}}</span>
 						</div>
 					</div>
 
 				</div>
 
 				<div id="sendmessage">
-					<input type="text" placeholder="Send message...">
-					<button id="send"></button>
+					<input type="text" #messageInput placeholder="Send message..." (keyup.enter)="send()">
+					<button id="send" (click)="send()"></button>
 				</div>
 
 			</div>
