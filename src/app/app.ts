@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketchatService } from 'websocketlib';
 import { environment } from '../environments/environment';
 import { LoadingComponent } from './common/loading/loading.component';
@@ -15,12 +15,19 @@ import { LocalstorageService } from './service/localstorage.service';
 export class App {
   protected title = 'zchat-angular';
 
+  public token: string = "";
+
   constructor(
     private websocketchatService: WebsocketchatService,
     private router: Router,
     public dialog: MatDialog,
+    private route: ActivatedRoute,
     private localstorage: LocalstorageService
   ) {
+
+    this.route.queryParams.subscribe(params => {
+      this.token = params['AUTHTOKEN'];
+    });
     this.init();
   }
 
@@ -76,8 +83,8 @@ export class App {
   initauth() {
     var arr = window.location.href.split("?");
     if (arr != null && arr.length >= 2 && arr[1] != null) {
-      var token = arr[1].split("=");
-      if (token != null && token.length >= 2 && token[1] != null) {
+      var token = this.token; //arr[1].split("=");
+      if (token != null && token != "") {
       const dialogRef = this.dialog.open(LoadingComponent, {
         disableClose: true
       });
@@ -122,7 +129,8 @@ export class App {
           dialogRef.close({ flag: false });
         });
       } else {
-        this.router.navigate(['/aouth']);
+        // this.router.navigate(['/aouth']);
+        return;
       }
     } else {
       this.router.navigate(['/aouth']);
