@@ -22,7 +22,7 @@
     "@angular/service-worker": "^20.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "webrtclib": "file:../WebRTCLIB",
+    "webrtclib": "git+https://github.com/chousann/WebRTCLIB.git",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
