@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build --base-href=/zchat-angular/ && cp dist/zchat-angular/browser/index.html dist/zchat-angular/browser/404.html",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "buildall": "ng build websocketlib && ng build --base-href=/zchat-angular/ && cp dist/zchat-angular/browser/index.html dist/zchat-angular/browser/404.html",
+    "buildlib": "ng build websocketlib"
   },
   "private": true,
   "dependencies": {
@@ -20,9 +22,9 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/router": "^20.0.0",
     "@angular/service-worker": "^20.0.0",
+    "webrtclib": "git+https://github.com/chousann/WebRTCLIB.git",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "webrtclib": "git+https://github.com/chousann/WebRTCLIB.git",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
