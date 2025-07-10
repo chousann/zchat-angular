@@ -16,7 +16,7 @@ export class Chatview {
   isLoading: boolean = false;
   
   // API配置
-  private readonly API_URL = 'http://localhost:5678/webhook/5e56a263-3a40-44bd-bc9d-1cfb3bc2a87d/chat';
+  private readonly API_URL = 'https://n8n.cnss.eu.org/webhook/5e56a263-3a40-44bd-bc9d-1cfb3bc2a87d/chat';
   private readonly SESSION_ID = 'a0a2ba7e-bb4f-4a8b-8e46-b554cb81e90c';
 
   constructor(
