@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WebRTCDataChannelComponent } from 'WebRTCLIB'
+import { WebRTCDataChannelComponent } from 'webrtclib'
 import { WebsocketchatService } from 'websocketlib';
 import { LocalstorageService } from '../service/localstorage.service';
 import { MatSnackBar } from '@angular/material/snack-bar';

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WebRTCComponent } from 'WebRTCLIB'
+import { WebRTCComponent } from 'webrtclib'
 import { WebsocketchatService } from 'websocketlib';
 import { LocalstorageService } from '../service/localstorage.service';
 import { environment } from '../../environments/environment';
