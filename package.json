@@ -22,9 +22,9 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/router": "^20.0.0",
     "@angular/service-worker": "^20.0.0",
-    "webrtclib": "git+https://github.com/chousann/WebRTCLIB.git",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "webrtclib": "github:chousann/WebRTCLIB",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
