@@ -83,8 +83,8 @@ export class App {
   initauth() {
     var arr = window.location.href.split("?");
     if (arr != null && arr.length >= 2 && arr[1] != null) {
-      var token = this.token; //arr[1].split("=");
-      if (token != null && token != "") {
+      var token = arr[1].split("=");
+      if (token != null) {
       const dialogRef = this.dialog.open(LoadingComponent, {
         disableClose: true
       });
