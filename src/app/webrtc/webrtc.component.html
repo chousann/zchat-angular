@@ -7,17 +7,45 @@
     <span class="example-spacer"></span>
   </mat-toolbar>
 </p>
-<input id="videoCallButton" type="button" disabled value="Video Call"/>
-<input id="endCallButton" type="button" disabled value="End Call"/>
-<div class="example-boundary">
-  <div class="example-box" cdkDragBoundary=".example-boundary" cdkDrag>
-    <p>R</p>
-    <video id="remote" autoplay style="width: 100%"></video>
-  </div>
-  <div class="example-box" cdkDragBoundary=".example-boundary" cdkDrag>
-    <p>L</p>
-    <video id="local" autoplay muted style="height: 100px"></video>
-  </div>
+
+<div class="webrtc-wrapper">
+  <mat-card class="webrtc-card" [ngClass]="windowState" #webrtcCard>
+    <mat-card-header>
+      <mat-card-title>视频通话</mat-card-title>
+      <mat-card-subtitle>WebRTC实时音视频</mat-card-subtitle>
+      <div class="window-controls">
+  <!-- 最小化按钮已移除，避免模板错误 -->
+  <!-- 全屏按钮已移除，避免模板错误 -->
+        <!-- 恢复按钮已移除，避免模板错误 -->
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="video-area">
+        <div class="video-box remote" cdkDragBoundary=".video-area" cdkDrag [ngClass]="remoteWindowState">
+          <span class="video-label">远端</span>
+          <div class="window-controls">
+            <button mat-icon-button (click)="minimizeRemote()" aria-label="最小化"><mat-icon>minimize</mat-icon></button>
+            <button mat-icon-button (click)="toggleRemoteFullscreen($event)" aria-label="全屏"><mat-icon>fullscreen</mat-icon></button>
+            <button mat-icon-button (click)="restoreRemote()" aria-label="恢复"><mat-icon>crop_square</mat-icon></button>
+          </div>
+          <video id="remote" autoplay playsinline></video>
+        </div>
+        <div class="video-box local" cdkDragBoundary=".video-area" cdkDrag [ngClass]="localWindowState">
+          <span class="video-label">本地</span>
+          <div class="window-controls">
+            <button mat-icon-button (click)="minimizeLocal()" aria-label="最小化"><mat-icon>minimize</mat-icon></button>
+            <button mat-icon-button (click)="toggleLocalFullscreen($event)" aria-label="全屏"><mat-icon>fullscreen</mat-icon></button>
+            <button mat-icon-button (click)="restoreLocal()" aria-label="恢复"><mat-icon>crop_square</mat-icon></button>
+          </div>
+          <video id="local" autoplay muted playsinline></video>
+        </div>
+      </div>
+      <div class="button-group">
+        <button mat-raised-button color="primary" id="videoCallButton">发起通话</button>
+        <button mat-raised-button color="warn" id="endCallButton">结束通话</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>
 
 <div id="webrtc">

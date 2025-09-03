@@ -14,6 +14,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class WebrtcComponent implements OnInit {
 
   toUser: string;
+  windowState: string = 'restored';
+  remoteWindowState: string = 'restored';
+  localWindowState: string = 'restored';
   authToken: string;
   constructor(
     private websocketService: WebsocketchatService,
@@ -67,6 +70,50 @@ export class WebrtcComponent implements OnInit {
 
   back() {
     this.router.navigate(['/tabs']);
+  }
+
+  // 远端窗口控制
+  minimizeRemote() {
+    this.remoteWindowState = 'minimized';
+  }
+  restoreRemote() {
+    this.remoteWindowState = 'restored';
+  }
+  toggleRemoteFullscreen(event: Event) {
+    if (this.remoteWindowState !== 'fullscreen') {
+      this.remoteWindowState = 'fullscreen';
+      const el = (event.target as HTMLElement).closest('.video-box');
+      if (el && el.requestFullscreen) {
+        el.requestFullscreen();
+      }
+    } else {
+      this.remoteWindowState = 'restored';
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  }
+
+  // 本地窗口控制
+  minimizeLocal() {
+    this.localWindowState = 'minimized';
+  }
+  restoreLocal() {
+    this.localWindowState = 'restored';
+  }
+  toggleLocalFullscreen(event: Event) {
+    if (this.localWindowState !== 'fullscreen') {
+      this.localWindowState = 'fullscreen';
+      const el = (event.target as HTMLElement).closest('.video-box');
+      if (el && el.requestFullscreen) {
+        el.requestFullscreen();
+      }
+    } else {
+      this.localWindowState = 'restored';
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
   }
 
   openSnackBar(message: string, action: string) {
