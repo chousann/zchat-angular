@@ -1,68 +1,56 @@
-	<div class="container w3layouts agileits">
+<div class="chat-container">
 
-		<div id="chatbox">
-			<div id="chatview" class="p1">
-                
-				<!-- <div id="profile" class="animate">
-					<div id="close" (click)="back()">
-						<div class="cy s1 s2 s3"></div>
-						<div class="cx s1 s2 s3"></div>
-					</div>
-                    <img [src]="userData.avatar || 'assets/images/winter-soldier.jpg'" class="floatingImg" style="top: 20px; width: 68px; left: 108px;">
-					<p class="animate"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{userData.name || '巴基·巴恩斯'}}</font></font></p>
-					<span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">{{userData.email || 'wintersoldiergmail.com'}}</font></font></span>
-				</div> -->
+  <!-- Header -->
+  <div class="chat-header">
+    <button class="back-btn" (click)="back()">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <img [src]="userData.avatar || 'assets/images/winter-soldier.jpg'" class="header-avatar">
+    <div class="header-info">
+      <span class="header-name">{{ userData.name || aiName }}</span>
+      <span class="header-status">Online</span>
+    </div>
+  </div>
 
-				<div id="chat-messages">
+  <!-- Messages area -->
+  <div id="chat-messages" #chatMessages (scroll)="onScroll()" (click)="handleMessageClick($event)">
+    <div class="message" *ngFor="let message of messages; let i = index"
+         [ngClass]="{'own': message.isOwn, 'welcome': message.isWelcome}">
+      <img [src]="message.avatar" class="msg-avatar">
+      <div class="bubble" [ngClass]="{'own-bubble': message.isOwn, 'ai-bubble': !message.isOwn}">
+        <div class="markdown-content" [innerHTML]="message.htmlText"></div>
+        <span class="msg-time" *ngIf="message.time">{{message.time}}</span>
+      </div>
+    </div>
 
-					<!-- <label style="width: 100%;">Monday 01</label> -->
+    <!-- Loading indicator -->
+    <div class="message" *ngIf="isLoading">
+      <img [src]="userData.avatar || 'assets/images/winter-soldier.jpg'" class="msg-avatar">
+      <div class="bubble ai-bubble typing-bubble">
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-					<!-- 静态示例消息 -->
-					<div class="message w3layouts">
-						<img src="assets/images/winter-soldier.jpg">
-						<div class="bubble">
-							你好！我是张雪山。一个热爱编程的开发者。
-							<span></span>
-						</div>
-					</div>
+  <!-- Scroll to bottom button -->
+  <button class="scroll-btn" *ngIf="showScrollBtn" (click)="scrollToBottom()">
+    <span class="material-icons">keyboard_arrow_down</span>
+  </button>
 
-                    <!-- 动态消息 -->
-					<div class="message" *ngFor="let message of messages" [ngClass]="{'right': message.isOwn}">
-						<img [src]="message.avatar">
-						<div class="bubble">
-							{{message.text}}
-							<span>{{message.time}}</span>
-						</div>
-					</div>
+  <!-- Input area -->
+  <div class="input-area">
+    <input type="text"
+           #messageInput
+           placeholder="Type a message..."
+           (keyup.enter)="send()"
+           [disabled]="isLoading">
+    <button class="send-btn" (click)="send()" [disabled]="isLoading">
+      <span class="material-icons">send</span>
+    </button>
+  </div>
 
-					<!-- 加载状态指示器 -->
-					<div class="message" *ngIf="isLoading">
-						<img [src]="userData.avatar || 'assets/images/winter-soldier.jpg'">
-						<div class="bubble loading-bubble">
-							<div class="typing-indicator">
-								<span></span>
-								<span></span>
-								<span></span>
-							</div>
-						</div>
-					</div>
-
-				</div>
-
-				<div id="sendmessage">
-					<input type="text" 
-						   #messageInput 
-						   placeholder="Send message..." 
-						   (keyup.enter)="send()"
-						   [disabled]="isLoading">
-					<button id="send" 
-							(click)="send()" 
-							[disabled]="isLoading"
-							[class.disabled]="isLoading"></button>
-				</div>
-
-			</div>
-
-		</div>
-
-	</div>
+</div>

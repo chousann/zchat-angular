@@ -1,7 +1,10 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chatview',
@@ -9,23 +12,29 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   templateUrl: './chatview.html',
   styleUrl: './chatview.scss'
 })
-export class Chatview {
+export class Chatview implements OnInit, AfterViewInit, OnDestroy {
   userData: any = {};
   messages: any[] = [];
   @ViewChild('messageInput') messageInput!: ElementRef;
+  @ViewChild('chatMessages') chatMessages!: ElementRef;
   isLoading: boolean = false;
-  
-  // API配置
-  private readonly API_URL = 'https://n8n.cnss.eu.org/webhook/5e56a263-3a40-44bd-bc9d-1cfb3bc2a87d/chat';
-  private readonly SESSION_ID = 'a0a2ba7e-bb4f-4a8b-8e46-b554cb81e90c';
+  showScrollBtn: boolean = false;
+  aiName: string = 'Wiki-Query Agent';
+  conversationId: string = '';
+  private queryParamsSub!: Subscription;
+
+  private readonly API_URL = 'http://192.168.1.19:3001/agent';
+  private readonly SESSION_ID = 'Samsung00';
 
   constructor(
     public location: Location,
     private route: ActivatedRoute,
-    private http: HttpClient
-  ) {
-    // Get user data from query parameters
-    this.route.queryParams.subscribe(params => {
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
+  ) {}
+
+  ngOnInit() {
+    this.queryParamsSub = this.route.queryParams.subscribe(params => {
       this.userData = {
         id: params['userId'],
         name: params['userName'],
@@ -33,84 +42,170 @@ export class Chatview {
         avatar: params['userAvatar']
       };
     });
+
+    this.initConversationId();
+    this.addWelcomeMessage();
+  }
+
+  ngAfterViewInit() {
+    this.scrollToBottom();
+  }
+
+  ngOnDestroy() {
+    this.queryParamsSub?.unsubscribe();
+  }
+
+  private initConversationId() {
+    const stored = localStorage.getItem('conversationId');
+    if (stored) {
+      this.conversationId = stored;
+    } else {
+      this.conversationId = this.generateUUID();
+      localStorage.setItem('conversationId', this.conversationId);
+    }
+  }
+
+  private generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
   }
 
   back() {
     this.location.back();
   }
 
-  send() {
+  async send() {
     const messageText = this.messageInput.nativeElement.value.trim();
     if (messageText && !this.isLoading) {
-      const newMessage = {
+      const htmlText = await this.parseMarkdown(messageText);
+      this.messages.push({
         text: messageText,
+        htmlText,
         time: this.getCurrentTime(),
         isOwn: true,
-        avatar: 'assets/images/captain-america.jpg' // 当前用户的头像
-      };
+        avatar: 'assets/images/captain-america.jpg'
+      });
 
-      this.messages.push(newMessage);
       this.messageInput.nativeElement.value = '';
       this.isLoading = true;
+      this.scrollToBottom();
 
-      // 调用API服务
       this.sendMessageToAPI(messageText);
     }
   }
 
   private sendMessageToAPI(chatInput: string) {
-    const requestBody = {
-      action: "sendMessage",
-      sessionId: this.SESSION_ID,
-      chatInput: chatInput
-    };
+    const body = { action: 'sendMessage', sessionId: this.SESSION_ID, chatInput, conversationId: this.conversationId };
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
+    this.http.post(this.API_URL, body, { headers }).subscribe({
+      next: (response: any) => this.handleApiResponse(response),
+      error: (error: any) => this.handleApiError(error)
     });
-
-    this.http.post(this.API_URL, requestBody, { headers })
-      .subscribe({
-        next: (response: any) => {
-          this.isLoading = false;
-          // 处理API响应
-          if (response && response.output) {
-            const replyMessage = {
-              text: response.output,
-              time: this.getCurrentTime(),
-              isOwn: false,
-              avatar: this.userData.avatar || 'assets/images/winter-soldier.jpg'
-            };
-            this.messages.push(replyMessage);
-          } else {
-            // 如果API没有返回有效响应，使用默认回复
-            this.addDefaultReply();
-          }
-        },
-        error: (error) => {
-          this.isLoading = false;
-          console.error('API调用失败:', error);
-          // API调用失败时，使用默认回复
-          this.addDefaultReply();
-        }
-      });
   }
 
-  private addDefaultReply() {
-    const replyMessage = {
-      text: '收到你的消息了！',
+  private async handleApiResponse(response: any) {
+    this.isLoading = false;
+    if (response?.output) {
+      const htmlText = await this.parseMarkdown(response.output);
+      this.messages.push({
+        text: response.output,
+        htmlText,
+        time: this.getCurrentTime(),
+        isOwn: false,
+        avatar: this.userData.avatar || 'assets/images/winter-soldier.jpg'
+      });
+    } else {
+      await this.addDefaultReply();
+    }
+    this.scrollToBottom();
+  }
+
+  private async handleApiError(error: any) {
+    this.isLoading = false;
+    console.error('API error:', error);
+    await this.addDefaultReply();
+    this.scrollToBottom();
+  }
+
+  private async addDefaultReply() {
+    const text = 'Sorry, I encountered an issue. Please try again.';
+    const htmlText = await this.parseMarkdown(text);
+    this.messages.push({
+      text,
+      htmlText,
       time: this.getCurrentTime(),
       isOwn: false,
       avatar: this.userData.avatar || 'assets/images/winter-soldier.jpg'
-    };
-    this.messages.push(replyMessage);
+    });
+  }
+
+  private async addWelcomeMessage() {
+    const text = `你好！👋\n\n我是 **Wiki-Query 智能体**，专门负责帮你查询 **LLM Wiki 知识库**。有什么问题尽管问我！`;
+    const htmlText = await this.parseMarkdown(text);
+    this.messages.push({
+      text,
+      htmlText,
+      time: '',
+      isOwn: false,
+      avatar: 'assets/images/winter-soldier.jpg',
+      isWelcome: true
+    });
+  }
+
+  scrollToBottom() {
+    setTimeout(() => {
+      const el = this.chatMessages?.nativeElement;
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+        this.showScrollBtn = false;
+      }
+    }, 50);
+  }
+
+  onScroll() {
+    const el = this.chatMessages?.nativeElement;
+    if (el) {
+      const threshold = 150;
+      this.showScrollBtn = el.scrollHeight - el.scrollTop - el.clientHeight > threshold;
+    }
+  }
+
+  handleMessageClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('copy-btn')) {
+      const wrapper = target.closest('.code-block-wrapper');
+      if (wrapper) {
+        const code = wrapper.querySelector('code')?.textContent || '';
+        navigator.clipboard.writeText(code).then(() => {
+          target.textContent = 'Copied!';
+          setTimeout(() => { target.textContent = 'Copy'; }, 2000);
+        });
+      }
+    }
+  }
+
+  private async parseMarkdown(text: string): Promise<SafeHtml> {
+    const processed = text.replace(/\[\[([^\]]+)\]\]/g, (_match, page: string) => {
+      const trimmed = page.trim();
+      const slug = trimmed.replace(/\s+/g, '-');
+      return `<a href="http://192.168.1.19:3000/${slug}" target="_blank" rel="noopener" class="wikilink">${trimmed}</a>`;
+    });
+    const html = await marked.parse(processed);
+    const withCopyButtons = html.replace(
+      /<pre><code/g,
+      '<div class="code-block-wrapper"><button class="copy-btn">Copy</button><pre><code'
+    ).replace(
+      /<\/code><\/pre>/g,
+      '</code></pre></div>'
+    );
+    return this.sanitizer.bypassSecurityTrustHtml(withCopyButtons);
   }
 
   private getCurrentTime(): string {
     const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   }
-
 }
