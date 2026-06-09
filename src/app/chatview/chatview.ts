@@ -332,9 +332,12 @@ export class Chatview implements OnInit, AfterViewInit, OnDestroy {
     const processed = input.replace(/\[\[([^\]]+)\]\]/g, (_match, page: string) => {
       const trimmed = page.trim();
       const slug = trimmed.replace(/\s+/g, '-');
-      return `<a href="http://192.168.1.19:3000/${slug}" target="_blank" rel="noopener" class="wikilink">${trimmed}</a>`;
+      return `<a href="http://192.168.1.19:3000/${slug}" target="_blank" rel="noopener" class="wikilink" style="color:#facc15;text-decoration:none;border-bottom:1px dashed #facc15;padding:0 2px;">${trimmed}</a>`;
     });
     let html = await marked.parse(processed);
+    // Inject inline styles on all <a> tags to ensure visibility on dark backgrounds
+    // (Angular Material's light theme overrides :ng-deep link colors)
+    html = html.replace(/<a /g, '<a style="color:#7dd3fc;text-decoration:underline;text-underline-offset:2px;" ');
     const withCopyButtons = html.replace(
       /<pre><code/g,
       '<div class="code-block-wrapper"><button class="copy-btn">Copy</button><pre><code'
@@ -355,7 +358,8 @@ export class Chatview implements OnInit, AfterViewInit, OnDestroy {
   /** Lightweight markdown for feedback step content (no copy buttons needed) */
   private async parseInlineMarkdown(text: string): Promise<SafeHtml> {
     const input = typeof text === 'string' ? text : String(text ?? '');
-    const html = await marked.parse(input);
+    let html = await marked.parse(input);
+    html = html.replace(/<a /g, '<a style="color:#7dd3fc;text-decoration:underline;text-underline-offset:2px;" ');
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
