@@ -218,7 +218,7 @@ export class Chatview implements OnInit, AfterViewInit, OnDestroy {
                 if (aiMessageIndex >= 0 && aiMessageIndex < this.messages.length) {
                   this.messages[aiMessageIndex].feedbackSteps.push({
                     type: 'tool_call',
-                    content: data.thinking || ''
+                    content: typeof data.thinking === 'string' ? data.thinking : JSON.stringify(data.thinking ?? '')
                   });
                 }
               });
@@ -229,7 +229,7 @@ export class Chatview implements OnInit, AfterViewInit, OnDestroy {
                 if (aiMessageIndex >= 0 && aiMessageIndex < this.messages.length) {
                   this.messages[aiMessageIndex].feedbackSteps.push({
                     type: 'tool_result',
-                    content: data.thinking || ''
+                    content: typeof data.thinking === 'string' ? data.thinking : JSON.stringify(data.thinking ?? '')
                   });
                 }
               });
@@ -328,7 +328,8 @@ export class Chatview implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private async parseMarkdown(text: string, isStreaming = false): Promise<SafeHtml> {
-    const processed = text.replace(/\[\[([^\]]+)\]\]/g, (_match, page: string) => {
+    const input = typeof text === 'string' ? text : String(text ?? '');
+    const processed = input.replace(/\[\[([^\]]+)\]\]/g, (_match, page: string) => {
       const trimmed = page.trim();
       const slug = trimmed.replace(/\s+/g, '-');
       return `<a href="http://192.168.1.19:3000/${slug}" target="_blank" rel="noopener" class="wikilink">${trimmed}</a>`;
@@ -353,7 +354,8 @@ export class Chatview implements OnInit, AfterViewInit, OnDestroy {
 
   /** Lightweight markdown for feedback step content (no copy buttons needed) */
   private async parseInlineMarkdown(text: string): Promise<SafeHtml> {
-    const html = await marked.parse(text);
+    const input = typeof text === 'string' ? text : String(text ?? '');
+    const html = await marked.parse(input);
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
