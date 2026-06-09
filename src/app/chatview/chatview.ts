@@ -69,7 +69,7 @@ export class Chatview implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initConversationId() {
-    const stored = localStorage.getItem('conversationId');
+    const stored = null;//localStorage.getItem('conversationId');
     if (stored) {
       this.conversationId = stored;
     } else {
