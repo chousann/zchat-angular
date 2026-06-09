@@ -18,13 +18,40 @@
          [ngClass]="{'own': message.isOwn, 'welcome': message.isWelcome}">
       <img [src]="message.avatar" class="msg-avatar">
       <div class="bubble" [ngClass]="{'own-bubble': message.isOwn, 'ai-bubble': !message.isOwn}">
+
+        <!-- Feedback panel (collapsible, only for AI messages with feedback steps) -->
+        <div class="feedback-panel" *ngIf="!message.isOwn && message.feedbackSteps && message.feedbackSteps.length > 0">
+          <div class="feedback-header" (click)="toggleFeedback(message)">
+            <span class="feedback-chevron" [class.expanded]="message.feedbackExpanded">▸</span>
+            <span class="feedback-summary">{{ getFeedbackSummary(message.feedbackSteps) }}</span>
+            <span class="feedback-count">{{ message.feedbackSteps.length }} step{{ message.feedbackSteps.length > 1 ? 's' : '' }}</span>
+          </div>
+          <div class="feedback-body" *ngIf="message.feedbackExpanded">
+            <div class="feedback-step" *ngFor="let step of message.feedbackSteps; let j = index"
+                 [attr.data-type]="step.type">
+              <span class="feedback-step-icon">
+                <ng-container [ngSwitch]="step.type">
+                  <span *ngSwitchCase="'thinking'">🤔</span>
+                  <span *ngSwitchCase="'tool_call'">🔧</span>
+                  <span *ngSwitchCase="'tool_result'">📋</span>
+                </ng-container>
+              </span>
+              <div class="feedback-step-content">
+                <span class="feedback-step-label">{{ step.type === 'tool_call' ? 'Tool Call' : step.type === 'tool_result' ? 'Tool Result' : 'Thinking' }}</span>
+                <div class="feedback-step-detail markdown-content" [innerHTML]="step.htmlContent || step.content"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main response content -->
         <div class="markdown-content" [innerHTML]="message.htmlText"></div>
         <span class="msg-time" *ngIf="message.time">{{message.time}}</span>
       </div>
     </div>
 
-    <!-- Loading indicator -->
-    <div class="message" *ngIf="isLoading">
+    <!-- Loading / Thinking indicator -->
+    <div class="message" *ngIf="isLoading && isThinking">
       <img [src]="userData.avatar || 'assets/images/winter-soldier.jpg'" class="msg-avatar">
       <div class="bubble ai-bubble typing-bubble">
         <div class="typing-indicator">
@@ -32,6 +59,7 @@
           <span></span>
           <span></span>
         </div>
+        <span class="typing-status" *ngIf="feedbackStatus">{{ feedbackStatus }}</span>
       </div>
     </div>
   </div>
