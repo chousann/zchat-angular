@@ -210,6 +210,12 @@ export class Chatview implements OnInit, AfterViewInit, OnDestroy {
               this.ngZone.run(() => {
                 this.isThinking = true;
                 this.feedbackStatus = 'Thinking…';
+                if (aiMessageIndex >= 0 && aiMessageIndex < this.messages.length && data.thinking) {
+                  this.messages[aiMessageIndex].feedbackSteps.push({
+                    type: 'thinking',
+                    content: typeof data.thinking === 'string' ? data.thinking : JSON.stringify(data.thinking)
+                  });
+                }
               });
             } else if (currentEvent === 'tool_call') {
               this.ngZone.run(() => {
