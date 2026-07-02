@@ -74,9 +74,8 @@
     <input type="text"
            #messageInput
            placeholder="Type a message..."
-           (keyup.enter)="send()"
-           [disabled]="isLoading">
-    <button class="send-btn" (click)="send()" [disabled]="isLoading">
+           (keyup.enter)="send()">
+    <button class="send-btn" (click)="send()">
       <span class="material-icons">send</span>
     </button>
   </div>
